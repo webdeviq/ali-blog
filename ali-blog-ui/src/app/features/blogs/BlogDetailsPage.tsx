@@ -1,16 +1,38 @@
-import { Box, Chip, Divider, Typography } from "@mui/material";
+import {
+  Box,
+  Chip,
+  CircularProgress,
+  Divider,
+  Typography,
+} from "@mui/material";
 import { Navigate, useParams } from "react-router-dom";
+import { useEffect, useState } from "react";
+import agent from "../../api/agent";
+import type { Blog } from "../../models/blog";
 import { formatDisplayDate } from "../../utils/formatDisplayDate";
 import { getEstimatedReadTime } from "../../utils/getEstimatedReadTime";
-import { mockBlogPosts } from "./mockBlogPosts";
 import { routes } from "../../router/routes";
 
 export default function BlogDetailsPage() {
   const { slug } = useParams();
+  const [blog, setBlog] = useState<Blog | null>(null);
+  const [loading, setLoading] = useState(Boolean(slug));
+  const [notFound, setNotFound] = useState(!slug);
 
-  const blog = mockBlogPosts.find((post) => post.slug === slug);
+  useEffect(() => {
+    if (!slug) return;
 
-  if (!blog) {
+    agent.BlogPosts.details(slug)
+      .then(setBlog)
+      .catch(() => setNotFound(true))
+      .finally(() => setLoading(false));
+  }, [slug]);
+
+  if (loading) {
+    return <CircularProgress />;
+  }
+
+  if (notFound || !blog) {
     return <Navigate to={routes.blogs} replace />;
   }
 
@@ -47,13 +69,10 @@ export default function BlogDetailsPage() {
           gap: 3,
         }}
       >
-        {(blog.content || blog.summary).split("\n\n").map((paragraph) => (
+        {blog.content.split("\n\n").map((paragraph) => (
           <Typography
             key={paragraph}
-            sx={{
-              lineHeight: 1.9,
-              fontSize: "1.05rem",
-            }}
+            sx={{ lineHeight: 1.9, fontSize: "1.05rem" }}
           >
             {paragraph}
           </Typography>

@@ -1,6 +1,9 @@
 import axios from "axios";
+import type { Blog } from "../models/blog";
+import type { User } from "../models/user";
+import type { PagedResponse } from "../models/pagedResponse";
 
-axios.defaults.baseURL = "http://localhost:8080/api";
+axios.defaults.baseURL = "http://localhost:8081/api";
 
 const responseBody = <T>(response: { data: T }) => response.data;
 
@@ -14,13 +17,13 @@ const requests = {
 };
 
 const BlogPosts = {
-  list: () => requests.get("/posts"),
-  details: (slug: string) => requests.get(`/posts/${slug}`),
+  list: () => requests.get<PagedResponse<Blog>>("/posts"),
+  details: (slug: string) => requests.get<Blog>(`/posts/${slug}`),
 };
 
 const Account = {
   login: (body: { username: string; password: string }) =>
-    requests.post("/auth/login", body),
+    requests.post<User>("/auth/login", body),
 };
 
 const agent = {

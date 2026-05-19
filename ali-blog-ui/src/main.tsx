@@ -1,4 +1,3 @@
-
 import { createRoot } from "react-dom/client";
 import { RouterProvider } from "react-router-dom";
 import { CssBaseline, ThemeProvider } from "@mui/material";
@@ -9,9 +8,9 @@ import "@fontsource/inter/700.css";
 import "@fontsource/inter/800.css";
 
 import "./index.css";
-import { router } from "./app/router/routes";
-import { theme } from "./app/theme/theme";
+import { router } from "./app/router/routes.tsx";
 
+import { theme } from "./app/theme/theme";
 
 import AuthProvider from "./app/auth/AuthProvider";
 

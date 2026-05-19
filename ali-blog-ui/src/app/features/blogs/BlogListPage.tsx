@@ -1,8 +1,27 @@
-import { Box, Typography } from "@mui/material";
+import { Box, CircularProgress, Typography } from "@mui/material";
+import { useEffect, useState } from "react";
+import agent from "../../api/agent";
+
+import type { Blog } from "../../models/blog";
 import BlogCard from "./components/BlogCard";
-import { mockBlogPosts } from "./mockBlogPosts";
 
 export default function BlogListPage() {
+  const [blogs, setBlogs] = useState<Blog[]>([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    console.log("Fetching blogs");
+    agent.BlogPosts.list()
+      .then((response) => {
+        setBlogs(response.content);
+      })
+      .finally(() => setLoading(false));
+  }, []);
+
+  if (loading) {
+    return <CircularProgress />;
+  }
+
   return (
     <Box>
       <Typography variant="h3" sx={{ mb: 1 }}>
@@ -21,7 +40,7 @@ export default function BlogListPage() {
           gap: 3,
         }}
       >
-        {mockBlogPosts.map((blog) => (
+        {blogs.map((blog) => (
           <BlogCard key={blog.slug} blog={blog} />
         ))}
       </Box>
