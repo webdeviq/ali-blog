@@ -1,3 +1,7 @@
+import { Navigate, useNavigate, useLocation } from "react-router-dom";
+
+import { useAuth } from "../auth/useAuth";
+
 import LockOutlinedIcon from "@mui/icons-material/LockOutlined";
 import {
   Avatar,
@@ -7,8 +11,26 @@ import {
   TextField,
   Typography,
 } from "@mui/material";
+import { mockUser } from "../auth/mockUser";
+import { routes } from "../router/routes";
 
 export default function LoginPage() {
+  const location = useLocation();
+  const from = location.state?.from?.pathname || "/admin";
+
+  const navigate = useNavigate();
+
+  const { login, isAuthenticated } = useAuth();
+
+  const handleLogin = () => {
+    login(mockUser);
+    navigate(from, { replace: true });
+  };
+
+  if (isAuthenticated) {
+    return <Navigate to={routes.admin} replace />;
+  }
+
   return (
     <Box
       sx={{
@@ -50,8 +72,7 @@ export default function LoginPage() {
         <Box sx={{ display: "grid", gap: 2 }}>
           <TextField label="Username" fullWidth />
           <TextField label="Password" type="password" fullWidth />
-
-          <Button variant="contained" size="large">
+          <Button variant="contained" size="large" onClick={handleLogin}>
             Sign In
           </Button>
         </Box>

@@ -1,72 +1,79 @@
-import { Chip, Paper, Typography } from "@mui/material";
+import ArrowOutwardIcon from "@mui/icons-material/ArrowOutward";
+import { Box, Card, CardContent, Chip, Typography } from "@mui/material";
 import { Link } from "react-router-dom";
 
+import type { Blog } from "../../../models/blog";
+import { formatDisplayDate } from "../../../utils/formatDisplayDate";
+import { getEstimatedReadTime } from "../../../utils/getEstimatedReadTime";
+import { routes } from "../../../router/routes";
+
 type Props = {
-  slug: string;
-  title: string;
-  summary: string;
-  tag: string;
-  date: string;
+  blog: Blog;
 };
 
-export default function BlogCard({
-  slug,
-  title,
-  summary,
-  tag,
-  date,
-}: Props) {
+export default function BlogCard({ blog }: Props) {
+  const { estimatedReadTime } = getEstimatedReadTime(blog.content);
+
   return (
-    <Paper
+    <Card
       component={Link}
-      to={`/blogs/${slug}`}
+      to={routes.blogDetails(blog.slug)}
       elevation={0}
       sx={{
-        p: 3,
-        borderRadius: 4,
+        textDecoration: "none",
         border: "1px solid",
         borderColor: "divider",
-        textDecoration: "none",
-        color: "inherit",
+        borderRadius: 4,
         transition: "all 0.2s ease",
+        height: "100%",
 
         "&:hover": {
-          transform: "translateY(-3px)",
-          boxShadow: "0 12px 35px rgba(15,23,42,0.08)",
+          transform: "translateY(-4px)",
+          borderColor: "rgba(255,95,25,0.35)",
         },
       }}
     >
-      <Chip
-        label={tag}
-        size="small"
-        sx={{
-          mb: 2,
-          bgcolor: "rgba(255,95,25,0.08)",
-          color: "primary.dark",
-          fontWeight: 700,
-        }}
-      />
+      <CardContent sx={{ p: 3 }}>
+        <Box
+          sx={{
+            mb: 2,
+            display: "flex",
+            justifyContent: "space-between",
+            alignItems: "center",
+            gap: 1,
+          }}
+        >
+          <Chip
+            label={blog.tag}
+            size="small"
+            sx={{
+              bgcolor: "rgba(255,95,25,0.08)",
+              color: "primary.dark",
+              fontWeight: 700,
+            }}
+          />
 
-      <Typography variant="h5" sx={{ mb: 1 }}>
-        {title}
-      </Typography>
+          <ArrowOutwardIcon
+            sx={{
+              fontSize: 18,
+              color: "text.secondary",
+            }}
+          />
+        </Box>
 
-      <Typography
-        color="text.secondary"
-        sx={{
-          lineHeight: 1.7,
-          mb: 1,
-        }}
-      >
-        {summary}
-      </Typography>
+        <Typography variant="h5" sx={{ mb: 1.5 }}>
+          {blog.title}
+        </Typography>
 
-      <Typography
-        variant="caption"
-        color="text.secondary"
-      >
-        {date}
-      </Typography>
-    </Paper>
+        <Typography color="text.secondary" sx={{ mb: 3 }}>
+          {blog.summary}
+        </Typography>
+
+        <Typography variant="body2" color="text.secondary">
+          {formatDisplayDate(new Date(blog.createdAt))} • {estimatedReadTime}{" "}
+          min read
+        </Typography>
+      </CardContent>
+    </Card>
   );
 }

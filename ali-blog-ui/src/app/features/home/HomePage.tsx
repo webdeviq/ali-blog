@@ -5,7 +5,6 @@ import { Link } from "react-router-dom";
 import BlogCard from "../blogs/components/BlogCard";
 import { mockBlogPosts } from "../blogs/mockBlogPosts";
 
-
 export default function HomePage() {
   return (
     <Box>
@@ -17,7 +16,7 @@ export default function HomePage() {
           border: "1px solid",
           borderColor: "divider",
           background:
-            "radial-gradient(circle at top left, rgba(255,95,25,0.12), transparent 35%), #fff",
+            "radial-gradient(circle at top left, rgba(255,95,25,0.12), transparent 35%), background.paper",
         }}
       >
         <Stack spacing={3}>
@@ -63,7 +62,6 @@ export default function HomePage() {
         <Typography variant="h4" sx={{ mb: 3 }}>
           Latest Articles
         </Typography>
-
         <Box
           sx={{
             display: "grid",
@@ -71,15 +69,8 @@ export default function HomePage() {
             gap: 3,
           }}
         >
-          {mockBlogPosts.slice(0, 3).map((post) => (
-            <BlogCard
-              key={post.slug}
-              slug={post.slug}
-              title={post.title}
-              summary={post.summary}
-              tag={post.tag}
-              date={post.createdAt}
-            />
+          {mockBlogPosts.slice(0, 3).map((blog) => (
+            <BlogCard key={blog.slug} blog={blog} />
           ))}
         </Box>
       </Box>

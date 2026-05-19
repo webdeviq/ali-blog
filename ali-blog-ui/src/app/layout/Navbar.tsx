@@ -8,7 +8,10 @@ import {
   Typography,
 } from "@mui/material";
 
-import { NavLink } from "react-router-dom";
+import { NavLink, useNavigate } from "react-router-dom";
+
+import { useAuth } from "../auth/useAuth";
+import { routes } from "../router/routes";
 
 const navLinkStyles = {
   textTransform: "none",
@@ -28,6 +31,14 @@ const navLinkStyles = {
 };
 
 export default function Navbar() {
+  const { isAuthenticated, logout } = useAuth();
+
+  const navigate = useNavigate();
+
+  const handleLogout = () => {
+    logout();
+    navigate(routes.home);
+  };
   return (
     <AppBar
       position="fixed"
@@ -45,7 +56,7 @@ export default function Navbar() {
           <Stack direction="row" spacing={2} sx={{ alignItems: "center" }}>
             <Typography
               component={NavLink}
-              to="/"
+              to={routes.home}
               sx={{
                 textDecoration: "none",
                 color: "text.primary",
@@ -59,13 +70,25 @@ export default function Navbar() {
 
             <Box sx={{ flexGrow: 1 }} />
 
-            <Button component={NavLink} to="/blogs" sx={navLinkStyles}>
+            <Button component={NavLink} to={routes.blogs} sx={navLinkStyles}>
               Blog
             </Button>
 
-            <Button component={NavLink} to="/login" sx={navLinkStyles}>
-              Login
-            </Button>
+            {isAuthenticated && (
+              <Button component={NavLink} to={routes.admin} sx={navLinkStyles}>
+                Admin
+              </Button>
+            )}
+
+            {isAuthenticated ? (
+              <Button onClick={handleLogout} sx={navLinkStyles}>
+                Logout
+              </Button>
+            ) : (
+              <Button component={NavLink} to={routes.login} sx={navLinkStyles}>
+                Login
+              </Button>
+            )}
           </Stack>
         </Container>
       </Toolbar>

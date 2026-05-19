@@ -1,0 +1,38 @@
+# Node
+node_modules
+dist
+.vite
+
+# Java / Spring
+target
+build
+out
+*.class
+*.jar
+*.war
+HELP.md
+.mvn/wrapper/maven-wrapper.jar
+
+# IDE
+.idea
+.vscode
+*.iml
+
+# Logs / runtime
+logs
+*.log
+hs_err_pid*
+replay_pid*
+
+# Env files
+.env
+.env.*
+application-prod.properties
+
+# Safe examples
+!.env.example
+!application-example.properties
+
+# OS
+.DS_Store
+Thumbs.db

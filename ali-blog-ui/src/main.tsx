@@ -1,4 +1,4 @@
-import { StrictMode } from "react";
+
 import { createRoot } from "react-dom/client";
 import { RouterProvider } from "react-router-dom";
 import { CssBaseline, ThemeProvider } from "@mui/material";
@@ -12,11 +12,14 @@ import "./index.css";
 import { router } from "./app/router/routes";
 import { theme } from "./app/theme/theme";
 
+
+import AuthProvider from "./app/auth/AuthProvider";
+
 createRoot(document.getElementById("root")!).render(
-  <StrictMode>
-    <ThemeProvider theme={theme}>
-      <CssBaseline />
+  <ThemeProvider theme={theme}>
+    <CssBaseline />
+    <AuthProvider>
       <RouterProvider router={router} />
-    </ThemeProvider>
-  </StrictMode>
+    </AuthProvider>
+  </ThemeProvider>,
 );

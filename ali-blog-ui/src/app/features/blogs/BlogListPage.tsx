@@ -1,7 +1,7 @@
 import { Box, Typography } from "@mui/material";
 import BlogCard from "./components/BlogCard";
-
 import { mockBlogPosts } from "./mockBlogPosts";
+
 export default function BlogListPage() {
   return (
     <Box>
@@ -14,16 +14,15 @@ export default function BlogListPage() {
         software.
       </Typography>
 
-      <Box sx={{ display: "grid", gap: 2.5 }}>
-        {mockBlogPosts.map((post) => (
-          <BlogCard
-            key={post.slug}
-            slug={post.slug}
-            title={post.title}
-            summary={post.summary}
-            tag={post.tag}
-            date={post.createdAt}
-          />
+      <Box
+        sx={{
+          display: "grid",
+          gridTemplateColumns: { xs: "1fr", md: "repeat(3, 1fr)" },
+          gap: 3,
+        }}
+      >
+        {mockBlogPosts.map((blog) => (
+          <BlogCard key={blog.slug} blog={blog} />
         ))}
       </Box>
     </Box>

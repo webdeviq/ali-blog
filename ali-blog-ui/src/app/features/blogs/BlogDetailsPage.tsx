@@ -1,20 +1,25 @@
 import { Box, Chip, Divider, Typography } from "@mui/material";
 import { Navigate, useParams } from "react-router-dom";
+import { formatDisplayDate } from "../../utils/formatDisplayDate";
+import { getEstimatedReadTime } from "../../utils/getEstimatedReadTime";
 import { mockBlogPosts } from "./mockBlogPosts";
+import { routes } from "../../router/routes";
 
 export default function BlogDetailsPage() {
   const { slug } = useParams();
 
-  const post = mockBlogPosts.find((blog) => blog.slug === slug);
+  const blog = mockBlogPosts.find((post) => post.slug === slug);
 
-  if (!post) {
-    return <Navigate to="/blogs" replace />;
+  if (!blog) {
+    return <Navigate to={routes.blogs} replace />;
   }
+
+  const { estimatedReadTime } = getEstimatedReadTime(blog.content);
 
   return (
     <Box>
       <Chip
-        label={post.tag}
+        label={blog.tag}
         sx={{
           mb: 3,
           bgcolor: "rgba(255,95,25,0.08)",
@@ -24,11 +29,12 @@ export default function BlogDetailsPage() {
       />
 
       <Typography variant="h2" sx={{ mb: 2, maxWidth: 900 }}>
-        {post.title}
+        {blog.title}
       </Typography>
 
-      <Typography color="text.secondary" sx={{ mb: 4, fontSize: "1rem" }}>
-        Published {post.createdAt} • 8 min read
+      <Typography color="text.secondary" sx={{ mb: 4 }}>
+        Published {formatDisplayDate(new Date(blog.createdAt))} •{" "}
+        {estimatedReadTime} min read
       </Typography>
 
       <Divider sx={{ mb: 5 }} />
@@ -41,14 +47,17 @@ export default function BlogDetailsPage() {
           gap: 3,
         }}
       >
-        <Typography sx={{ lineHeight: 1.9, fontSize: "1.05rem" }}>
-          This is where the full blog article content will be displayed.
-        </Typography>
-
-        <Typography sx={{ lineHeight: 1.9, fontSize: "1.05rem" }}>
-          For now, this page is reading from mock data using the slug from the
-          URL.
-        </Typography>
+        {(blog.content || blog.summary).split("\n\n").map((paragraph) => (
+          <Typography
+            key={paragraph}
+            sx={{
+              lineHeight: 1.9,
+              fontSize: "1.05rem",
+            }}
+          >
+            {paragraph}
+          </Typography>
+        ))}
       </Box>
     </Box>
   );

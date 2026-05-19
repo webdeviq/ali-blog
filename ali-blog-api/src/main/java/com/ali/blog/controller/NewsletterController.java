@@ -3,14 +3,12 @@ package com.ali.blog.controller;
 
 import com.ali.blog.dto.MessageResponse;
 import com.ali.blog.dto.SubscribeRequest;
-import com.ali.blog.dto.SubscriberResponse;
 import com.ali.blog.dto.UnsubscribeRequest;
 import com.ali.blog.service.NewsletterService;
 import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.List;
 
 @RestController
 @RequestMapping("/api/newsletter")
