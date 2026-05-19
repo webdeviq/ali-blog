@@ -27,9 +27,23 @@ export default function BlogCard({ blog }: Props) {
         transition: "all 0.2s ease",
         height: "100%",
 
+        position: "relative",
+        overflow: "hidden",
+
+        "&::before": {
+          content: '""',
+          position: "absolute",
+          top: 0,
+          left: 0,
+          right: 0,
+          height: 4,
+          bgcolor: "primary.main",
+        },
+
         "&:hover": {
           transform: "translateY(-4px)",
           borderColor: "rgba(255,95,25,0.35)",
+          boxShadow: "0 14px 35px rgba(15,23,42,0.08)",
         },
       }}
     >

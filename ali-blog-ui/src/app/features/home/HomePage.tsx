@@ -1,11 +1,33 @@
 import ArrowForwardIcon from "@mui/icons-material/ArrowForward";
 import CodeIcon from "@mui/icons-material/Code";
-import { Box, Button, Chip, Paper, Stack, Typography } from "@mui/material";
+import {
+  Box,
+  Button,
+  Chip,
+  CircularProgress,
+  Paper,
+  Stack,
+  Typography,
+} from "@mui/material";
+import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
+
+import agent from "../../api/agent";
+import type { Blog } from "../../models/blog";
+import { routes } from "../../router/routes";
 import BlogCard from "../blogs/components/BlogCard";
-import { mockBlogPosts } from "../blogs/mockBlogPosts";
+import NewsletterSection from "./NewsletterSection";
 
 export default function HomePage() {
+  const [blogs, setBlogs] = useState<Blog[]>([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    agent.BlogPosts.list()
+      .then((response) => setBlogs(response.content.slice(0, 3)))
+      .finally(() => setLoading(false));
+  }, []);
+
   return (
     <Box>
       <Paper
@@ -16,7 +38,7 @@ export default function HomePage() {
           border: "1px solid",
           borderColor: "divider",
           background:
-            "radial-gradient(circle at top left, rgba(255,95,25,0.12), transparent 35%), background.paper",
+            "radial-gradient(circle at top left, rgba(255,95,25,0.12), transparent 35%), #fff",
         }}
       >
         <Stack spacing={3}>
@@ -48,7 +70,7 @@ export default function HomePage() {
           <Box>
             <Button
               component={Link}
-              to="/blogs"
+              to={routes.blogs}
               variant="contained"
               endIcon={<ArrowForwardIcon />}
               sx={{ px: 3, py: 1.2 }}
@@ -58,22 +80,31 @@ export default function HomePage() {
           </Box>
         </Stack>
       </Paper>
+
       <Box sx={{ mt: 6 }}>
         <Typography variant="h4" sx={{ mb: 3 }}>
           Latest Articles
         </Typography>
-        <Box
-          sx={{
-            display: "grid",
-            gridTemplateColumns: { xs: "1fr", md: "repeat(3, 1fr)" },
-            gap: 3,
-          }}
-        >
-          {mockBlogPosts.slice(0, 3).map((blog) => (
-            <BlogCard key={blog.slug} blog={blog} />
-          ))}
-        </Box>
+
+        {loading ? (
+          <Box sx={{ py: 4 }}>
+            <CircularProgress />
+          </Box>
+        ) : (
+          <Box
+            sx={{
+              display: "grid",
+              gridTemplateColumns: { xs: "1fr", md: "repeat(3, 1fr)" },
+              gap: 3,
+            }}
+          >
+            {blogs.map((blog) => (
+              <BlogCard key={blog.slug} blog={blog} />
+            ))}
+          </Box>
+        )}
       </Box>
+      <NewsletterSection />
     </Box>
   );
 }

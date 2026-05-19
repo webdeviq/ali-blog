@@ -71,23 +71,23 @@ export default function Navbar() {
             <Box sx={{ flexGrow: 1 }} />
 
             <Button component={NavLink} to={routes.blogs} sx={navLinkStyles}>
-              Blog
+              Blogs
             </Button>
 
             {isAuthenticated && (
-              <Button component={NavLink} to={routes.admin} sx={navLinkStyles}>
-                Admin
-              </Button>
-            )}
+              <>
+                <Button
+                  component={NavLink}
+                  to={routes.admin}
+                  sx={navLinkStyles}
+                >
+                  Admin
+                </Button>
 
-            {isAuthenticated ? (
-              <Button onClick={handleLogout} sx={navLinkStyles}>
-                Logout
-              </Button>
-            ) : (
-              <Button component={NavLink} to={routes.login} sx={navLinkStyles}>
-                Login
-              </Button>
+                <Button onClick={handleLogout} sx={navLinkStyles}>
+                  Logout
+                </Button>
+              </>
             )}
           </Stack>
         </Container>

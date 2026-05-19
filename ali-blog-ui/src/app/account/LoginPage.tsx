@@ -17,9 +17,10 @@ import {
 import { routes } from "../router/routes";
 
 export default function LoginPage() {
-  const [username, setUsername] = useState("");
+  const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [submitting, setSubmitting] = useState(false);
+  const [error, setError] = useState("");
 
   const location = useLocation();
   const from = location.state?.from?.pathname || "/admin";
@@ -30,11 +31,16 @@ export default function LoginPage() {
 
   const handleLogin = async () => {
     setSubmitting(true);
+    setError("");
 
     try {
-      const user = await agent.Account.login({ username, password });
-      login(user);
+      const response = await agent.Account.login({ email, password });
+
+      login({ email, token: response.token, roles: ["Admin"] });
+
       navigate(from, { replace: true });
+    } catch {
+      setError("Invalid email or password");
     } finally {
       setSubmitting(false);
     }
@@ -80,13 +86,19 @@ export default function LoginPage() {
           <Typography color="text.secondary" sx={{ mt: 0.5 }}>
             Sign in to manage blog posts.
           </Typography>
+          {error && (
+            <Typography color="error" sx={{ mt: 1 }}>
+              {error}
+            </Typography>
+          )}
         </Box>
 
         <Box sx={{ display: "grid", gap: 2 }}>
           <TextField
-            label="Username"
-            value={username}
-            onChange={(event) => setUsername(event.target.value)}
+            label="Email"
+            value={email}
+            type="email"
+            onChange={(event) => setEmail(event.target.value)}
             fullWidth
           />
           <TextField
@@ -97,7 +109,7 @@ export default function LoginPage() {
             fullWidth
           />
           <Button
-            disabled={!username.trim() || !password.trim() || submitting}
+            disabled={!email.trim() || !password.trim() || submitting}
             variant="contained"
             size="large"
             onClick={handleLogin}

@@ -1,7 +1,7 @@
 import type { User } from "../models/user";
 
 export const mockUser: User = {
-  username: "ali",
+  email: "ali",
   token: "mock-token",
   roles: ["Admin"],
 };
