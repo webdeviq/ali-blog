@@ -1,11 +1,15 @@
 import {
   Box,
+  Button,
   Chip,
   CircularProgress,
   Divider,
   Typography,
 } from "@mui/material";
-import { Navigate, useParams } from "react-router-dom";
+
+import { ArrowBack } from "@mui/icons-material";
+
+import { Link, Navigate, useParams } from "react-router-dom";
 import { useEffect, useState } from "react";
 import agent from "../../api/agent";
 import type { Blog } from "../../models/blog";
@@ -29,7 +33,11 @@ export default function BlogDetailsPage() {
   }, [slug]);
 
   if (loading) {
-    return <CircularProgress />;
+    return (
+      <Box sx={{ display: "grid", placeItems: "center", minHeight: "50vh" }}>
+        <CircularProgress />
+      </Box>
+    );
   }
 
   if (notFound || !blog) {
@@ -37,27 +45,38 @@ export default function BlogDetailsPage() {
   }
 
   const { estimatedReadTime } = getEstimatedReadTime(blog.content);
+  const paragraphs = blog.content.split("\n\n").filter(Boolean);
 
   return (
     <Box>
-      <Chip
-        label={blog.tag}
-        sx={{
-          mb: 3,
-          bgcolor: "rgba(255,95,25,0.08)",
-          color: "primary.dark",
-          fontWeight: 700,
-        }}
-      />
+      <Button
+        component={Link}
+        to={routes.blogs}
+        startIcon={<ArrowBack />}
+        sx={{ mb: 4 }}
+      >
+        Back to Blogs
+      </Button>
+      <Box sx={{ mb: 5, maxWidth: 900 }}>
+        <Chip
+          label={blog.tag}
+          sx={{
+            mb: 3,
+            bgcolor: "rgba(255,95,25,0.08)",
+            color: "primary.dark",
+            fontWeight: 700,
+          }}
+        />
 
-      <Typography variant="h2" sx={{ mb: 2, maxWidth: 900 }}>
-        {blog.title}
-      </Typography>
+        <Typography variant="h2" sx={{ mb: 2, lineHeight: 1.1 }}>
+          {blog.title}
+        </Typography>
 
-      <Typography color="text.secondary" sx={{ mb: 4 }}>
-        Published {formatDisplayDate(new Date(blog.createdAt))} •{" "}
-        {estimatedReadTime} min read
-      </Typography>
+        <Typography color="text.secondary">
+          Published {formatDisplayDate(new Date(blog.createdAt))} •{" "}
+          {estimatedReadTime} min read
+        </Typography>
+      </Box>
 
       <Divider sx={{ mb: 5 }} />
 
@@ -69,10 +88,14 @@ export default function BlogDetailsPage() {
           gap: 3,
         }}
       >
-        {blog.content.split("\n\n").map((paragraph) => (
+        {paragraphs.map((paragraph) => (
           <Typography
             key={paragraph}
-            sx={{ lineHeight: 1.9, fontSize: "1.05rem" }}
+            sx={{
+              lineHeight: 1.9,
+              fontSize: "1.08rem",
+              color: "text.primary",
+            }}
           >
             {paragraph}
           </Typography>

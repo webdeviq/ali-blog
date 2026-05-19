@@ -1,7 +1,9 @@
 import { Navigate, useNavigate, useLocation } from "react-router-dom";
 
 import { useAuth } from "../auth/useAuth";
+import agent from "../api/agent";
 
+import { useState } from "react";
 import LockOutlinedIcon from "@mui/icons-material/LockOutlined";
 import {
   Avatar,
@@ -11,10 +13,14 @@ import {
   TextField,
   Typography,
 } from "@mui/material";
-import { mockUser } from "../auth/mockUser";
+
 import { routes } from "../router/routes";
 
 export default function LoginPage() {
+  const [username, setUsername] = useState("");
+  const [password, setPassword] = useState("");
+  const [submitting, setSubmitting] = useState(false);
+
   const location = useLocation();
   const from = location.state?.from?.pathname || "/admin";
 
@@ -22,9 +28,16 @@ export default function LoginPage() {
 
   const { login, isAuthenticated } = useAuth();
 
-  const handleLogin = () => {
-    login(mockUser);
-    navigate(from, { replace: true });
+  const handleLogin = async () => {
+    setSubmitting(true);
+
+    try {
+      const user = await agent.Account.login({ username, password });
+      login(user);
+      navigate(from, { replace: true });
+    } finally {
+      setSubmitting(false);
+    }
   };
 
   if (isAuthenticated) {
@@ -70,9 +83,25 @@ export default function LoginPage() {
         </Box>
 
         <Box sx={{ display: "grid", gap: 2 }}>
-          <TextField label="Username" fullWidth />
-          <TextField label="Password" type="password" fullWidth />
-          <Button variant="contained" size="large" onClick={handleLogin}>
+          <TextField
+            label="Username"
+            value={username}
+            onChange={(event) => setUsername(event.target.value)}
+            fullWidth
+          />
+          <TextField
+            label="Password"
+            type="password"
+            value={password}
+            onChange={(event) => setPassword(event.target.value)}
+            fullWidth
+          />
+          <Button
+            disabled={!username.trim() || !password.trim() || submitting}
+            variant="contained"
+            size="large"
+            onClick={handleLogin}
+          >
             Sign In
           </Button>
         </Box>
