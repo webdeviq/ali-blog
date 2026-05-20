@@ -1,9 +1,12 @@
 export interface Blog {
   id: number;
-  slug: string;
   title: string;
-  summary: string;
+  slug: string;
   content: string;
-  tag: string;
+  excerpt: string;
+  published: boolean;
   createdAt: string;
+  updatedAt: string;
+  categoryName: string;
+  categorySlug: string;
 }

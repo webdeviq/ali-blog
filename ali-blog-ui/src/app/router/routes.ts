@@ -4,7 +4,7 @@ export const routes = {
   login: "/login",
 
   admin: "/admin",
-  createPost: "/admin/post/new",
+  createPost: "/admin/posts/new",
 
   editPost: (slug: string) => `/admin/posts/${slug}/edit`,
   blogDetails: (slug: string) => `/blogs/${slug}`,

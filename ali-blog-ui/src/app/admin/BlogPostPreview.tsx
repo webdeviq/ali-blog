@@ -33,11 +33,12 @@ export default function BlogPostPreview({ formValues }: Props) {
       </Typography>
 
       <Typography color="text.secondary" sx={{ mb: 2 }}>
-        {formValues.tag || "Tag"} • {estimatedReadTime} min read • {previewDate}
+        {formValues.categorySlug || "Category"} • {estimatedReadTime} min read •{" "}
+        {previewDate}
       </Typography>
 
       <Typography color="text.secondary" sx={{ mb: 2 }}>
-        {formValues.summary || "Post summary preview..."}
+        {formValues.excerpt || "Post excerpt preview..."}
       </Typography>
 
       <Typography sx={{ lineHeight: 1.8, whiteSpace: "pre-line" }}>

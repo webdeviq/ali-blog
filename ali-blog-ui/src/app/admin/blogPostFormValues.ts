@@ -1,8 +1,7 @@
 export type BlogPostFormValues = {
   title: string;
-  slug: string;
-  summary: string;
-  tag: string;
+  excerpt: string;
+  categorySlug: string;
   content: string;
   isPublished: boolean;
 };

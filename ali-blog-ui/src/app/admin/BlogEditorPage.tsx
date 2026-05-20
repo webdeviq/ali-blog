@@ -1,8 +1,9 @@
 import SaveOutlinedIcon from "@mui/icons-material/SaveOutlined";
 import SendOutlinedIcon from "@mui/icons-material/SendOutlined";
 import { tagOptions } from "../features/blogs/tagOptions";
-import { createSlug } from "../utils/createSlug";
+
 import BlogPostPreview from "./BlogPostPreview";
+import {  useEffect, useState } from "react";
 
 import {
   FormControlLabel,
@@ -14,32 +15,53 @@ import {
   TextField,
   Typography,
   MenuItem,
+  CircularProgress,
 } from "@mui/material";
-import { Navigate, useParams, Link } from "react-router-dom";
+import { useNavigate, useParams, Link } from "react-router-dom";
 import CloseIcon from "@mui/icons-material/Close";
 
 import ArrowBackIcon from "@mui/icons-material/ArrowBack";
-import { useState } from "react";
+
 import type { BlogPostFormValues } from "./blogPostFormValues";
 
-import { mockBlogPosts } from "../features/blogs/mockBlogPosts";
 import { getEstimatedReadTime } from "../utils/getEstimatedReadTime";
 import { routes } from "../router/routes";
+import agent from "../api/agent";
 
 export default function BlogEditorPage() {
   const { slug } = useParams();
+  const navigate = useNavigate();
 
-  const post = mockBlogPosts.find((blog) => blog.slug === slug);
   const isEditMode = Boolean(slug);
+  const [loading, setLoading] = useState(isEditMode);
 
   const [formValues, setFormValues] = useState<BlogPostFormValues>({
-    title: post?.title ?? "",
-    slug: post?.slug ?? "",
-    summary: post?.summary ?? "",
-    tag: post?.tag ?? "",
-    content: post?.content ?? "",
+    title: "",
+    excerpt: "",
+    categorySlug: "",
+    content: "",
     isPublished: false,
   });
+
+  useEffect(() => {
+    if (!isEditMode || !slug) return;
+
+    agent.AdminPosts.details(slug)
+      .then((post) =>
+        setFormValues({
+          title: post.title,
+          excerpt: post.excerpt,
+          categorySlug: post.categorySlug,
+          content: post.content,
+          isPublished: post.published,
+        }),
+      )
+      .finally(() => setLoading(false));
+  }, [isEditMode, slug]);
+
+  if (loading) {
+    return <CircularProgress />;
+  }
 
   const handleChange =
     (field: keyof BlogPostFormValues) =>
@@ -50,53 +72,44 @@ export default function BlogEditorPage() {
       }));
     };
 
-  const handleTitleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    const title = event.target.value;
-    setFormValues((prev) => ({
-      ...prev,
-      title,
-      slug: isEditMode ? prev.slug : createSlug(title),
-    }));
-  };
-
-  if (isEditMode && !post) {
-    return <Navigate to={routes.admin} replace />;
-  }
-
   const isFormValid =
     formValues.title.trim() &&
-    formValues.slug.trim() &&
-    formValues.summary.trim() &&
-    formValues.tag.trim() &&
+    formValues.excerpt.trim() &&
+    formValues.categorySlug.trim() &&
     formValues.content.trim();
 
-  const handleSaveDraft = () => {
-    setFormValues((prev) => ({
-      ...prev,
-      isPublished: false,
-    }));
+  const handleSaveDraft = async () => {
+    if (!isFormValid) return;
 
-    console.log("Saving Draft", {
-      ...formValues,
-      isPublished: false,
-    });
+    const savedPost =
+      isEditMode && slug
+        ? await agent.AdminPosts.update(slug, formValues)
+        : await agent.AdminPosts.create(formValues);
+
+    if (savedPost.published) {
+      await agent.AdminPosts.unpublish(savedPost.slug);
+    }
+
+    navigate(routes.admin);
   };
 
-  const handlePublish = () => {
-    setFormValues((prev) => ({
-      ...prev,
-      isPublished: true,
-    }));
+  const handlePublish = async () => {
+    if (!isFormValid) return;
 
-    console.log("Publishing post", {
-      ...formValues,
-      isPublished: true,
-    });
+    const savedPost =
+      isEditMode && slug
+        ? await agent.AdminPosts.update(slug, formValues)
+        : await agent.AdminPosts.create(formValues);
+
+    await agent.AdminPosts.publish(savedPost.slug);
+
+    navigate(routes.admin);
   };
 
   const { wordCount, estimatedReadTime } = getEstimatedReadTime(
     formValues.content,
   );
+
   return (
     <Box>
       <Button
@@ -166,40 +179,30 @@ export default function BlogEditorPage() {
           <TextField
             label="Title"
             value={formValues.title}
-            onChange={handleTitleChange}
+            onChange={handleChange("title")}
             fullWidth
-            helperText={
-              !isEditMode
-                ? "The slug is generated automatically from the title."
-                : ""
-            }
+            helperText="The slug is generated automatically from the title."
           />
+
           <TextField
-            label="Slug"
-            value={formValues.slug}
-            onChange={handleChange("slug")}
-            fullWidth
-            helperText="This will be used in the blog post URL."
-          />
-          <TextField
-            label="Summary"
-            value={formValues.summary}
-            onChange={handleChange("summary")}
+            label="Excerpt"
+            value={formValues.excerpt}
+            onChange={handleChange("excerpt")}
             fullWidth
             multiline
             minRows={3}
-            helperText={`${formValues.summary.length}/250 characters recommended`}
+            helperText={`${formValues.excerpt.length}/300 characters recommended`}
           />
           <TextField
             select
-            label="Tag"
-            value={formValues.tag}
-            onChange={handleChange("tag")}
+            label="Category"
+            value={formValues.categorySlug}
+            onChange={handleChange("categorySlug")}
             fullWidth
           >
-            {tagOptions.map((tag) => (
-              <MenuItem key={tag} value={tag}>
-                {tag}
+            {tagOptions.map((category) => (
+              <MenuItem key={category.slug} value={category.slug}>
+                {category.name}
               </MenuItem>
             ))}
           </TextField>

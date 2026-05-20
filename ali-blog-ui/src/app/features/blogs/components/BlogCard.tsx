@@ -58,7 +58,7 @@ export default function BlogCard({ blog }: Props) {
           }}
         >
           <Chip
-            label={blog.tag}
+            label={blog.categoryName}
             size="small"
             sx={{
               bgcolor: "rgba(255,95,25,0.08)",
@@ -80,7 +80,7 @@ export default function BlogCard({ blog }: Props) {
         </Typography>
 
         <Typography color="text.secondary" sx={{ mb: 3 }}>
-          {blog.summary}
+          {blog.excerpt}
         </Typography>
 
         <Typography variant="body2" color="text.secondary">

@@ -1,21 +1,50 @@
 import AddIcon from "@mui/icons-material/Add";
-
 import DeleteIcon from "@mui/icons-material/Delete";
-import { Link } from "react-router-dom";
-
 import EditOutlinedIcon from "@mui/icons-material/EditOutlined";
 import {
   Box,
   Button,
   Chip,
+  CircularProgress,
   IconButton,
   Paper,
   Typography,
 } from "@mui/material";
+import { useEffect, useState } from "react";
+import { Link } from "react-router-dom";
 
-import { mockBlogPosts } from "../features/blogs/mockBlogPosts";
+import agent from "../api/agent";
+import type { Blog } from "../models/blog";
 import { routes } from "../router/routes";
+
 export default function AdminDashboard() {
+  const [posts, setPosts] = useState<Blog[]>([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    agent.AdminPosts.list()
+      .then((response) => setPosts(response.content))
+      .finally(() => setLoading(false));
+  }, []);
+
+  if (loading) {
+    return (
+      <Box sx={{ display: "grid", placeItems: "center", minHeight: "50vh" }}>
+        <CircularProgress />
+      </Box>
+    );
+  }
+
+  const handleDelete = async (slug: string) => {
+    const confirmed = window.confirm(
+      "Are you sure you want to delete this post? ",
+    );
+    if (!confirmed) return;
+
+    await agent.AdminPosts.delete(slug);
+    setPosts((prev) => prev.filter((post) => post.slug !== slug));
+  };
+
   return (
     <Box>
       <Box
@@ -56,7 +85,7 @@ export default function AdminDashboard() {
           overflow: "hidden",
         }}
       >
-        {mockBlogPosts.map((post) => (
+        {posts.map((post) => (
           <Box
             key={post.id}
             sx={{
@@ -81,11 +110,13 @@ export default function AdminDashboard() {
             </Box>
 
             <Chip
-              label="Draft"
+              label={post.published ? "Published" : "Draft"}
               size="small"
               sx={{
-                bgcolor: "rgba(255,95,25,0.08)",
-                color: "primary.dark",
+                bgcolor: post.published
+                  ? "rgba(46,125,50,0.10)"
+                  : "rgba(255,95,25,0.08)",
+                color: post.published ? "success.main" : "primary.dark",
                 fontWeight: 700,
               }}
             />
@@ -94,7 +125,8 @@ export default function AdminDashboard() {
               <IconButton component={Link} to={routes.editPost(post.slug)}>
                 <EditOutlinedIcon />
               </IconButton>
-              <IconButton color="error">
+
+              <IconButton color="error" onClick={() => handleDelete(post.slug)}>
                 <DeleteIcon />
               </IconButton>
             </Box>
