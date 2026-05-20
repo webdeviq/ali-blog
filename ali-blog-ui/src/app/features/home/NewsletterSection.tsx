@@ -21,12 +21,13 @@ export default function NewsletterSection() {
       setSuccess(response.message);
       setEmail("");
     } catch {
-      setError("Subscription failed.");
+      setError("This email is already subscribed or could not be registered.");
     } finally {
       setSubmitting(false);
     }
   };
 
+  const isValidEmail = /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email.trim());
   return (
     <Paper
       elevation={0}
@@ -60,12 +61,17 @@ export default function NewsletterSection() {
             type="email"
             value={email}
             onChange={(event) => setEmail(event.target.value)}
+            error={Boolean(email.trim()) && !isValidEmail}
+            helperText={
+              Boolean(email.trim()) && !isValidEmail
+                ? "Please enter a valid email address."
+                : ""
+            }
             sx={{ minWidth: { xs: "100%", sm: 320 } }}
           />
-
           <Button
             variant="contained"
-            disabled={!email.trim() || submitting}
+            disabled={!isValidEmail || submitting}
             sx={{ px: 3 }}
             onClick={handleSubscribe}
           >

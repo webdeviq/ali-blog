@@ -1,14 +1,12 @@
 package com.ali.blog.controller;
 
-
 import com.ali.blog.dto.MessageResponse;
 import com.ali.blog.dto.SubscribeRequest;
 import com.ali.blog.dto.UnsubscribeRequest;
 import com.ali.blog.service.NewsletterService;
 import jakarta.validation.Valid;
-import org.springframework.http.HttpStatus;
-import org.springframework.web.bind.annotation.*;
 
+import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("/api/newsletter")
@@ -21,18 +19,16 @@ public class NewsletterController {
     }
 
     @PostMapping("/subscribe")
-    @ResponseStatus(HttpStatus.CREATED)
     public MessageResponse subscribe(@Valid @RequestBody SubscribeRequest request) {
+
         newsletterService.subscribe(request);
         return new MessageResponse("Subscription successful.");
     }
-
 
     @PostMapping("/unsubscribe")
     public MessageResponse unsubscribe(@Valid @RequestBody UnsubscribeRequest request) {
         newsletterService.unsubscribe(request);
         return new MessageResponse("Unsubscription successful.");
     }
-
 
 }
