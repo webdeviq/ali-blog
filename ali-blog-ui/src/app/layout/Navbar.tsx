@@ -11,6 +11,8 @@ import {
 import { NavLink, useNavigate } from "react-router-dom";
 
 import { useAuth } from "../auth/useAuth";
+
+import { useNotification } from "../notifications/useNotification";
 import { routes } from "../router/routes";
 
 const navLinkStyles = {
@@ -32,13 +34,16 @@ const navLinkStyles = {
 
 export default function Navbar() {
   const { isAuthenticated, logout } = useAuth();
+  const { showNotification } = useNotification();
 
   const navigate = useNavigate();
 
   const handleLogout = () => {
     logout();
+    showNotification("Logged out successfully", "success");
     navigate(routes.home);
   };
+
   return (
     <AppBar
       position="fixed"

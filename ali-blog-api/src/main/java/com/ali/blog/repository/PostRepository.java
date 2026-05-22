@@ -20,10 +20,10 @@ public interface PostRepository extends JpaRepository<Post, Long> {
 
     Page<Post> findByCategorySlugAndPublishedTrue(String categorySlug, Pageable pageable);
 
-    Page<Post> findByPublishedTrueAndTitleContainingIgnoreCaseOrPublishedTrueAndContentContainingIgnoreCase(String title, String content,  Pageable pageable);
+    Page<Post> findByPublishedTrueAndTitleContainingIgnoreCaseOrPublishedTrueAndContentContainingIgnoreCase(String title, String content, Pageable pageable);
 
     Page<Post> findByTitleContainingIgnoreCaseOrContentContainingIgnoreCase(String title, String content, Pageable pageable);
 
-
+    boolean existsByCategorySlug(String categorySlug);
 
 }

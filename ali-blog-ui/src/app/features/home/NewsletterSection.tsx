@@ -3,31 +3,38 @@ import { Box, Button, Paper, TextField, Typography } from "@mui/material";
 import { useState } from "react";
 
 import agent from "../../api/agent";
+import { useNotification } from "../../notifications/useNotification";
 
 export default function NewsletterSection() {
   const [email, setEmail] = useState("");
   const [submitting, setSubmitting] = useState(false);
-  const [success, setSuccess] = useState("");
-  const [error, setError] = useState("");
+
+  const { showNotification } = useNotification();
+
+  const isValidEmail = /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email.trim());
 
   const handleSubscribe = async () => {
+    if (!isValidEmail) return;
+
     setSubmitting(true);
-    setSuccess("");
-    setError("");
 
     try {
-      const response = await agent.Newsletter.subscribe({ email });
+      const response = await agent.Newsletter.subscribe({
+        email: email.trim(),
+      });
 
-      setSuccess(response.message);
+      showNotification(response.message, "success");
       setEmail("");
     } catch {
-      setError("This email is already subscribed or could not be registered.");
+      showNotification(
+        "This email is already subscribed or could not be registered.",
+        "error",
+      );
     } finally {
       setSubmitting(false);
     }
   };
 
-  const isValidEmail = /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email.trim());
   return (
     <Paper
       elevation={0}
@@ -69,27 +76,16 @@ export default function NewsletterSection() {
             }
             sx={{ minWidth: { xs: "100%", sm: 320 } }}
           />
+
           <Button
             variant="contained"
             disabled={!isValidEmail || submitting}
             sx={{ px: 3 }}
             onClick={handleSubscribe}
           >
-            Subscribe
+            {submitting ? "Subscribing..." : "Subscribe"}
           </Button>
         </Box>
-
-        {success && (
-          <Typography color="success.main" sx={{ mt: 2 }}>
-            {success}
-          </Typography>
-        )}
-
-        {error && (
-          <Typography color="error" sx={{ mt: 2 }}>
-            {error}
-          </Typography>
-        )}
       </Box>
     </Paper>
   );

@@ -4,6 +4,7 @@ package com.ali.blog.entity;
 import jakarta.persistence.*;
 
 import java.time.Instant;
+import java.util.UUID;
 
 @Entity
 @Table(name = "newsletter_subscribers")
@@ -19,11 +20,16 @@ public class NewsletterSubscriber {
     @Column(nullable = false, updatable = false)
     private Instant subscribedAt;
 
+    @Column(nullable = false , unique = true)
+    private String unsubscribeToken;
+
     protected NewsletterSubscriber() {
     }
 
     public NewsletterSubscriber(String email) {
         this.email = email;
+        this.unsubscribeToken = UUID.randomUUID().toString();
+
     }
 
     @PrePersist
@@ -45,5 +51,8 @@ public class NewsletterSubscriber {
         return subscribedAt;
     }
 
+    public String getUnsubscribeToken() {
+        return unsubscribeToken;
+    }
 
 }

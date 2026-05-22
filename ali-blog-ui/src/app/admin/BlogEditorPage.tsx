@@ -3,7 +3,7 @@ import SendOutlinedIcon from "@mui/icons-material/SendOutlined";
 import { tagOptions } from "../features/blogs/tagOptions";
 
 import BlogPostPreview from "./BlogPostPreview";
-import {  useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 
 import {
   FormControlLabel,
@@ -27,10 +27,13 @@ import type { BlogPostFormValues } from "./blogPostFormValues";
 import { getEstimatedReadTime } from "../utils/getEstimatedReadTime";
 import { routes } from "../router/routes";
 import agent from "../api/agent";
+import { useNotification } from "../notifications/useNotification";
 
 export default function BlogEditorPage() {
   const { slug } = useParams();
   const navigate = useNavigate();
+
+  const { showNotification } = useNotification();
 
   const isEditMode = Boolean(slug);
   const [loading, setLoading] = useState(isEditMode);
@@ -81,29 +84,51 @@ export default function BlogEditorPage() {
   const handleSaveDraft = async () => {
     if (!isFormValid) return;
 
-    const savedPost =
-      isEditMode && slug
-        ? await agent.AdminPosts.update(slug, formValues)
-        : await agent.AdminPosts.create(formValues);
+    try {
+      const savedPost =
+        isEditMode && slug
+          ? await agent.AdminPosts.update(slug, formValues)
+          : await agent.AdminPosts.create(formValues);
 
-    if (savedPost.published) {
-      await agent.AdminPosts.unpublish(savedPost.slug);
+      if (savedPost.published) {
+        await agent.AdminPosts.unpublish(savedPost.slug);
+      }
+
+      showNotification(
+        isEditMode
+          ? "Draft updated successfully"
+          : "Draft created successfully",
+        "success",
+      );
+
+      navigate(routes.admin);
+    } catch {
+      showNotification("Failed to save draft", "error");
     }
-
-    navigate(routes.admin);
   };
 
   const handlePublish = async () => {
     if (!isFormValid) return;
 
-    const savedPost =
-      isEditMode && slug
-        ? await agent.AdminPosts.update(slug, formValues)
-        : await agent.AdminPosts.create(formValues);
+    try {
+      const savedPost =
+        isEditMode && slug
+          ? await agent.AdminPosts.update(slug, formValues)
+          : await agent.AdminPosts.create(formValues);
 
-    await agent.AdminPosts.publish(savedPost.slug);
+      await agent.AdminPosts.publish(savedPost.slug);
 
-    navigate(routes.admin);
+      showNotification(
+        isEditMode
+          ? "Post updated and published successfully"
+          : "Post published successfully",
+        "success",
+      );
+
+      navigate(routes.admin);
+    } catch {
+      showNotification("Failed to publish post", "error");
+    }
   };
 
   const { wordCount, estimatedReadTime } = getEstimatedReadTime(

@@ -1,6 +1,5 @@
 package com.ali.blog.service;
 
-
 import com.ali.blog.dto.CategoryResponse;
 import com.ali.blog.dto.CreateCategoryRequest;
 import com.ali.blog.dto.UpdateCategoryRequest;
@@ -8,20 +7,21 @@ import com.ali.blog.entity.Category;
 import com.ali.blog.exception.DuplicateResourceException;
 import com.ali.blog.exception.ResourceNotFoundException;
 import com.ali.blog.repository.CategoryRepository;
+import com.ali.blog.repository.PostRepository;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
 
 @Service
-
 public class CategoryService {
 
     private final CategoryRepository categoryRepository;
+    private final PostRepository postRepository;
 
-    public CategoryService(CategoryRepository categoryRepository) {
+    public CategoryService(CategoryRepository categoryRepository, PostRepository postRepository) {
         this.categoryRepository = categoryRepository;
+        this.postRepository = postRepository;
     }
-
 
     public List<CategoryResponse> getCategories() {
         return categoryRepository.findAll().stream().map(this::toResponse).toList();
@@ -36,15 +36,8 @@ public class CategoryService {
 
         Category category = new Category(request.getName(), slug);
         Category savedCategory = categoryRepository.save(category);
+
         return toResponse(savedCategory);
-    }
-
-    private String createSlug(String value) {
-        return value.toLowerCase().trim().replaceAll("[^a-z0-9\\s-]", "").replaceAll("\\s+", "-").replaceAll("-+", "-");
-    }
-
-    private CategoryResponse toResponse(Category category) {
-        return new CategoryResponse(category.getId(), category.getName(), category.getSlug());
     }
 
     public CategoryResponse updateCategory(String slug, UpdateCategoryRequest request) {
@@ -66,6 +59,18 @@ public class CategoryService {
     public void deleteCategory(String slug) {
         Category category = categoryRepository.findBySlug(slug).orElseThrow(() -> new ResourceNotFoundException("Category not found with slug: " + slug));
 
+        if (postRepository.existsByCategorySlug(slug)) {
+            throw new DuplicateResourceException("Category cannot be deleted because it is assigned to one or more posts.");
+        }
+
         categoryRepository.delete(category);
+    }
+
+    private String createSlug(String value) {
+        return value.toLowerCase().trim().replaceAll("[^a-z0-9\\s-]", "").replaceAll("\\s+", "-").replaceAll("-+", "-");
+    }
+
+    private CategoryResponse toResponse(Category category) {
+        return new CategoryResponse(category.getId(), category.getName(), category.getSlug());
     }
 }

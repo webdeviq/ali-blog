@@ -11,5 +11,6 @@ public interface NewsletterSubscriberRepository extends JpaRepository<Newsletter
 
     Optional<NewsletterSubscriber> findByEmail(String email);
 
+    Optional<NewsletterSubscriber> findByUnsubscribeToken(String unsubscribeToken);
 
 }

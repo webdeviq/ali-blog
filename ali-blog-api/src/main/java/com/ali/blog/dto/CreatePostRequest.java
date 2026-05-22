@@ -11,11 +11,12 @@ public class CreatePostRequest {
 
 
     @NotBlank
-    @Size(max = 100)
+    @Size(max = 180)
     private String title;
 
 
     @NotBlank
+    @Size(max = 20000)
     private String content;
 
     @NotBlank
@@ -24,6 +25,7 @@ public class CreatePostRequest {
 
 
     @NotBlank
+    @Size(max = 100)
     private String categorySlug;
 
 

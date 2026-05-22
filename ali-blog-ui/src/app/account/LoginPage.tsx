@@ -1,9 +1,3 @@
-import { Navigate, useNavigate, useLocation } from "react-router-dom";
-
-import { useAuth } from "../auth/useAuth";
-import agent from "../api/agent";
-
-import { useState } from "react";
 import LockOutlinedIcon from "@mui/icons-material/LockOutlined";
 import {
   Avatar,
@@ -13,34 +7,46 @@ import {
   TextField,
   Typography,
 } from "@mui/material";
+import { useState } from "react";
+import { Navigate, useLocation, useNavigate } from "react-router-dom";
 
+import agent from "../api/agent";
+import { useAuth } from "../auth/useAuth";
+import { useNotification } from "../notifications/useNotification";
 import { routes } from "../router/routes";
 
 export default function LoginPage() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [submitting, setSubmitting] = useState(false);
-  const [error, setError] = useState("");
 
   const location = useLocation();
-  const from = location.state?.from?.pathname || "/admin";
-
   const navigate = useNavigate();
 
+  const from = location.state?.from?.pathname || routes.admin;
+
   const { login, isAuthenticated } = useAuth();
+  const { showNotification } = useNotification();
+
+  const isFormValid = email.trim() && password.trim();
 
   const handleLogin = async () => {
+    if (!isFormValid) return;
+
     setSubmitting(true);
-    setError("");
 
     try {
-      const response = await agent.Account.login({ email, password });
+      const response = await agent.Account.login({
+        email: email.trim(),
+        password,
+      });
 
-      login({ email, token: response.token, roles: ["Admin"] });
+      login({ email: email.trim(), token: response.token, roles: ["Admin"] });
 
+      showNotification("Logged in successfully", "success");
       navigate(from, { replace: true });
     } catch {
-      setError("Invalid email or password");
+      showNotification("Invalid email or password", "error");
     } finally {
       setSubmitting(false);
     }
@@ -86,11 +92,6 @@ export default function LoginPage() {
           <Typography color="text.secondary" sx={{ mt: 0.5 }}>
             Sign in to manage blog posts.
           </Typography>
-          {error && (
-            <Typography color="error" sx={{ mt: 1 }}>
-              {error}
-            </Typography>
-          )}
         </Box>
 
         <Box sx={{ display: "grid", gap: 2 }}>
@@ -101,6 +102,7 @@ export default function LoginPage() {
             onChange={(event) => setEmail(event.target.value)}
             fullWidth
           />
+
           <TextField
             label="Password"
             type="password"
@@ -108,13 +110,14 @@ export default function LoginPage() {
             onChange={(event) => setPassword(event.target.value)}
             fullWidth
           />
+
           <Button
-            disabled={!email.trim() || !password.trim() || submitting}
+            disabled={!isFormValid || submitting}
             variant="contained"
             size="large"
             onClick={handleLogin}
           >
-            Sign In
+            {submitting ? "Signing in..." : "Sign In"}
           </Button>
         </Box>
       </Paper>

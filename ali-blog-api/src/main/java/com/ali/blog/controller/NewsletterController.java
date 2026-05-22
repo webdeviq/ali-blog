@@ -5,7 +5,6 @@ import com.ali.blog.dto.SubscribeRequest;
 import com.ali.blog.dto.UnsubscribeRequest;
 import com.ali.blog.service.NewsletterService;
 import jakarta.validation.Valid;
-
 import org.springframework.web.bind.annotation.*;
 
 @RestController
@@ -20,7 +19,6 @@ public class NewsletterController {
 
     @PostMapping("/subscribe")
     public MessageResponse subscribe(@Valid @RequestBody SubscribeRequest request) {
-
         newsletterService.subscribe(request);
         return new MessageResponse("Subscription successful.");
     }
@@ -29,6 +27,12 @@ public class NewsletterController {
     public MessageResponse unsubscribe(@Valid @RequestBody UnsubscribeRequest request) {
         newsletterService.unsubscribe(request);
         return new MessageResponse("Unsubscription successful.");
+    }
+
+    @PostMapping("/unsubscribe/{token}")
+    public MessageResponse unsubscribeByToken(@PathVariable String token) {
+        newsletterService.unsubscribeByToken(token);
+        return new MessageResponse("Unsubscription successful");
     }
 
 }

@@ -1,6 +1,6 @@
 package com.ali.blog.service;
 
-
+import org.springframework.beans.factory.annotation.Value;
 import com.ali.blog.dto.CreatePostRequest;
 import com.ali.blog.dto.PagedResponse;
 import com.ali.blog.dto.PostResponse;
@@ -15,8 +15,8 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
-import java.util.List;
 
+import java.util.List;
 
 
 @Service
@@ -24,10 +24,14 @@ public class PostService {
 
     private final PostRepository postRepository;
     private final CategoryRepository categoryRepository;
+    private final NewsletterService newsletterService;
+    private final String frontendUrl;
 
-    public PostService(PostRepository postRepository, CategoryRepository categoryRepository) {
+    public PostService(PostRepository postRepository, CategoryRepository categoryRepository, NewsletterService newsletterService, @Value("${app.frontend.url}") String frontendUrl) {
         this.postRepository = postRepository;
         this.categoryRepository = categoryRepository;
+        this.newsletterService = newsletterService;
+        this.frontendUrl = frontendUrl;
     }
 
     public PagedResponse<PostResponse> getPosts(int page, int size) {
@@ -98,8 +102,17 @@ public class PostService {
 
     public PostResponse publishPost(String slug) {
         Post post = postRepository.findBySlug(slug).orElseThrow(() -> new ResourceNotFoundException("Post not found with slug: " + slug));
+
+        boolean wasDraft = !post.isPublished();
+
         post.publish();
         Post savedPost = postRepository.save(post);
+
+        if (wasDraft) {
+            String postUrl = frontendUrl + "/blogs/" + savedPost.getSlug();
+
+            newsletterService.notifySubscribersAboutNewPost(savedPost.getTitle(), savedPost.getExcerpt(), postUrl);
+        }
 
         return toResponse(savedPost);
     }
@@ -138,8 +151,10 @@ public class PostService {
     public PagedResponse<PostResponse> searchPublishedPosts(String search, int page, int size) {
         int safePage = normalizePageNumber(page);
         int safeSize = normalizePageSize(size);
+        String normalizedSearch = normalizeSearch(search);
 
-        Page<Post> postPage = postRepository.findByPublishedTrueAndTitleContainingIgnoreCaseOrPublishedTrueAndContentContainingIgnoreCase(search, search, PageRequest.of(safePage, safeSize, Sort.by(Sort.Direction.DESC, "createdAt")));
+        Page<Post> postPage = postRepository.findByPublishedTrueAndTitleContainingIgnoreCaseOrPublishedTrueAndContentContainingIgnoreCase(normalizedSearch, normalizedSearch, PageRequest.of(safePage, safeSize, Sort.by(Sort.Direction.DESC, "createdAt")));
+
         List<PostResponse> posts = postPage.getContent().stream().map(this::toResponse).toList();
 
         return new PagedResponse<>(posts, postPage.getNumber(), postPage.getSize(), postPage.getTotalElements(), postPage.getTotalPages(), postPage.isLast());
@@ -148,8 +163,9 @@ public class PostService {
     public PagedResponse<PostResponse> searchAdminPosts(String search, int page, int size) {
         int safePage = normalizePageNumber(page);
         int safeSize = normalizePageSize(size);
+        String normalizedSearch = normalizeSearch(search);
 
-        Page<Post> postPage = postRepository.findByTitleContainingIgnoreCaseOrContentContainingIgnoreCase(search, search, PageRequest.of(safePage, safeSize, Sort.by(Sort.Direction.DESC, "createdAt")));
+        Page<Post> postPage = postRepository.findByTitleContainingIgnoreCaseOrContentContainingIgnoreCase(normalizedSearch, normalizedSearch, PageRequest.of(safePage, safeSize, Sort.by(Sort.Direction.DESC, "createdAt")));
 
         List<PostResponse> posts = postPage.getContent().stream().map(this::toResponse).toList();
 
@@ -165,6 +181,14 @@ public class PostService {
         List<PostResponse> posts = postPage.getContent().stream().map(this::toResponse).toList();
 
         return new PagedResponse<>(posts, postPage.getNumber(), postPage.getSize(), postPage.getTotalElements(), postPage.getTotalPages(), postPage.isLast());
+    }
+
+    private String normalizeSearch(String search) {
+        if (search == null || search.isBlank()) {
+            throw new IllegalArgumentException("Search query cannot be blank");
+        }
+
+        return search.trim();
     }
 
 }

@@ -9,6 +9,7 @@ public class UnsubscribeRequest {
     @NotBlank
     @Email
     @Size(max = 320)
+
     private String email;
 
     public UnsubscribeRequest() {

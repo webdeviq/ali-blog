@@ -1,5 +1,6 @@
 import { Box, CircularProgress, Typography } from "@mui/material";
 import { useEffect, useState } from "react";
+
 import agent from "../../api/agent";
 import type { Blog } from "../../models/blog";
 import BlogCard from "./components/BlogCard";
@@ -7,10 +8,14 @@ import BlogCard from "./components/BlogCard";
 export default function BlogListPage() {
   const [blogs, setBlogs] = useState<Blog[]>([]);
   const [loading, setLoading] = useState(true);
+  const [error, setError] = useState("");
 
   useEffect(() => {
     agent.BlogPosts.list()
       .then((response) => setBlogs(response.content))
+      .catch(() =>
+        setError("Unable to load blog posts. Please try again later."),
+      )
       .finally(() => setLoading(false));
   }, []);
 
@@ -63,34 +68,48 @@ export default function BlogListPage() {
         </Typography>
       </Box>
 
-      <Box sx={{ display: "flex", gap: 4, mb: 5, flexWrap: "wrap" }}>
-        <Box>
-          <Typography variant="h4">{blogs.length}</Typography>
-          <Typography color="text.secondary">Articles</Typography>
-        </Box>
+      {error ? (
+        <Typography color="error" sx={{ mt: 4 }}>
+          {error}
+        </Typography>
+      ) : (
+        <>
+          <Box sx={{ display: "flex", gap: 4, mb: 5, flexWrap: "wrap" }}>
+            <Box>
+              <Typography variant="h4">{blogs.length}</Typography>
+              <Typography color="text.secondary">Articles</Typography>
+            </Box>
 
-        <Box>
-          <Typography variant="h4">Java</Typography>
-          <Typography color="text.secondary">Main Stack</Typography>
-        </Box>
+            <Box>
+              <Typography variant="h4">Spring Boot</Typography>
+              <Typography color="text.secondary">Backend Stack</Typography>
+            </Box>
 
-        <Box>
-          <Typography variant="h4">2026</Typography>
-          <Typography color="text.secondary">Active Writing</Typography>
-        </Box>
-      </Box>
+            <Box>
+              <Typography variant="h4">React / C#</Typography>
+              <Typography color="text.secondary">Full-Stack Roots</Typography>
+            </Box>
+          </Box>
 
-      <Box
-        sx={{
-          display: "grid",
-          gridTemplateColumns: { xs: "1fr", md: "repeat(3, 1fr)" },
-          gap: 3,
-        }}
-      >
-        {blogs.map((blog) => (
-          <BlogCard key={blog.slug} blog={blog} />
-        ))}
-      </Box>
+          {blogs.length === 0 ? (
+            <Typography color="text.secondary">
+              No blog posts are available yet.
+            </Typography>
+          ) : (
+            <Box
+              sx={{
+                display: "grid",
+                gridTemplateColumns: { xs: "1fr", md: "repeat(3, 1fr)" },
+                gap: 3,
+              }}
+            >
+              {blogs.map((blog) => (
+                <BlogCard key={blog.slug} blog={blog} />
+              ))}
+            </Box>
+          )}
+        </>
+      )}
     </Box>
   );
 }

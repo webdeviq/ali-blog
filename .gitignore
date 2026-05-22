@@ -36,3 +36,13 @@ application-prod.properties
 # OS
 .DS_Store
 Thumbs.db
+
+# Local Spring configs
+application-local.properties
+application-dev.properties
+
+# Secrets / certificates
+*.pem
+*.key
+*.p12
+*.jks

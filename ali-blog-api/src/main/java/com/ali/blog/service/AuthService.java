@@ -22,13 +22,16 @@ public class AuthService {
     }
 
     public LoginResponse login(LoginRequest request) {
-        AdminUser adminUser = adminUserRepository.findByEmail(request.getEmail()).orElseThrow(() -> new ResourceNotFoundException("Invalid email or password."));
+        String email = request.getEmail().trim().toLowerCase();
+
+        AdminUser adminUser = adminUserRepository.findByEmail(email).orElseThrow(() -> new ResourceNotFoundException("Invalid email or password."));
 
         boolean passwordMatches = passwordEncoder.matches(request.getPassword(), adminUser.getPasswordHash());
 
         if (!passwordMatches) {
             throw new ResourceNotFoundException("Invalid email or password.");
         }
+
         String token = jwtService.generateToken(adminUser.getEmail());
 
         return new LoginResponse(token);

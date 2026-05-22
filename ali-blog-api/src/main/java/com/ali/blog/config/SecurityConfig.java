@@ -22,13 +22,8 @@ public class SecurityConfig {
 
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
-        return http.csrf(AbstractHttpConfigurer::disable)
-                .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
-                .cors(cors -> {})
-                .authorizeHttpRequests(auth ->
-                        auth.requestMatchers("/api/auth/login", "/api/posts/**", "/api/categories/**", "/api/newsletter/subscribe", "/api/newsletter/unsubscribe")
-                                .permitAll().requestMatchers("/api/admin/**").hasRole("ADMIN")
-                                .anyRequest().denyAll()).addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class).build();
+        return http.csrf(AbstractHttpConfigurer::disable).sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS)).cors(cors -> {
+        }).authorizeHttpRequests(auth -> auth.requestMatchers("/api/auth/login", "/api/posts/**", "/api/categories/**", "/api/newsletter/subscribe", "/api/newsletter/unsubscribe", "/api/newsletter/unsubscribe/**").permitAll().requestMatchers("/api/admin/**").hasRole("ADMIN").anyRequest().denyAll()).addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class).build();
     }
 
 

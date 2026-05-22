@@ -21,10 +21,14 @@ import NewsletterSection from "./NewsletterSection";
 export default function HomePage() {
   const [blogs, setBlogs] = useState<Blog[]>([]);
   const [loading, setLoading] = useState(true);
+  const [error, setError] = useState("");
 
   useEffect(() => {
     agent.BlogPosts.list()
       .then((response) => setBlogs(response.content.slice(0, 3)))
+      .catch(() =>
+        setError("An error occurred loading the latest posts. Please try again later."),
+      )
       .finally(() => setLoading(false));
   }, []);
 
@@ -90,6 +94,12 @@ export default function HomePage() {
           <Box sx={{ py: 4 }}>
             <CircularProgress />
           </Box>
+        ) : error ? (
+          <Typography color="error">{error}</Typography>
+        ) : blogs.length === 0 ? (
+          <Typography color="text.secondary">
+            No latest articles are available yet.
+          </Typography>
         ) : (
           <Box
             sx={{
@@ -104,6 +114,7 @@ export default function HomePage() {
           </Box>
         )}
       </Box>
+
       <NewsletterSection />
     </Box>
   );

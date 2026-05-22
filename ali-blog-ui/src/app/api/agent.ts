@@ -1,27 +1,31 @@
 import axios from "axios";
 import type { Blog } from "../models/blog";
-
 import type { PagedResponse } from "../models/pagedResponse";
 import type { LoginResponse } from "../models/loginResponse";
 import type { MessageResponse } from "../models/messageResponse";
+import type { SubscriberResponse } from "../models/subscriberResponse";
 import type {
   CreatePostRequest,
   UpdatePostRequest,
 } from "../models/createPostRequest";
-axios.defaults.baseURL = "http://localhost:8081/api";
+
+axios.defaults.baseURL = import.meta.env.VITE_API_URL;
 
 const responseBody = <T>(response: { data: T }) => response.data;
 
 axios.interceptors.request.use((config) => {
   const user = localStorage.getItem("blog_user");
 
-  if (user) {
-    const parsedUser = JSON.parse(user);
-
-    if (parsedUser.token) {
-      config.headers.Authorization = `Bearer ${parsedUser.token}`;
-    }
+  if (!user) {
+    return config;
   }
+
+  const parsedUser = JSON.parse(user);
+
+  if (parsedUser.token) {
+    config.headers.Authorization = `Bearer ${parsedUser.token}`;
+  }
+
   return config;
 });
 
@@ -31,9 +35,9 @@ const requests = {
     axios.post<T>(url, body).then(responseBody),
   put: <T>(url: string, body: unknown) =>
     axios.put<T>(url, body).then(responseBody),
-  delete: <T>(url: string) => axios.delete<T>(url).then(responseBody),
   patch: <T>(url: string, body?: unknown) =>
     axios.patch<T>(url, body).then(responseBody),
+  delete: <T>(url: string) => axios.delete<T>(url).then(responseBody),
 };
 
 const BlogPosts = {
@@ -49,6 +53,15 @@ const Account = {
 const Newsletter = {
   subscribe: (body: { email: string }) =>
     requests.post<MessageResponse>("/newsletter/subscribe", body),
+
+  unsubscribe: (body: { email: string }) =>
+    requests.post<MessageResponse>("/newsletter/unsubscribe", body),
+
+  unsubscribeByToken: (token: string) =>
+    requests.post<MessageResponse>(`/newsletter/unsubscribe/${token}`, {}),
+
+  subscribers: () =>
+    requests.get<SubscriberResponse[]>("/admin/newsletter/subscribers"),
 };
 
 const AdminPosts = {

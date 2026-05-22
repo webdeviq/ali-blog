@@ -1,3 +1,4 @@
+import { ArrowBack } from "@mui/icons-material";
 import {
   Box,
   Button,
@@ -6,16 +7,14 @@ import {
   Divider,
   Typography,
 } from "@mui/material";
-
-import { ArrowBack } from "@mui/icons-material";
-
 import { Link, Navigate, useParams } from "react-router-dom";
 import { useEffect, useState } from "react";
+
 import agent from "../../api/agent";
 import type { Blog } from "../../models/blog";
+import { routes } from "../../router/routes";
 import { formatDisplayDate } from "../../utils/formatDisplayDate";
 import { getEstimatedReadTime } from "../../utils/getEstimatedReadTime";
-import { routes } from "../../router/routes";
 
 export default function BlogDetailsPage() {
   const { slug } = useParams();
@@ -57,9 +56,10 @@ export default function BlogDetailsPage() {
       >
         Back to Blogs
       </Button>
+
       <Box sx={{ mb: 5, maxWidth: 900 }}>
         <Chip
-          label={blog.tag}
+          label={blog.categoryName}
           sx={{
             mb: 3,
             bgcolor: "rgba(255,95,25,0.08)",
