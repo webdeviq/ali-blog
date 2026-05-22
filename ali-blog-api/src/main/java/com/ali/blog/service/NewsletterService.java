@@ -39,7 +39,7 @@ public class NewsletterService {
         try {
             emailService.sendEmail(email, "Welcome to Ali's Dev Journal", "Hi there,\n\n" + "Thank you for subscribing to Ali's Dev Journal.\n\n" + "This is where I share my journey as a developer, including notes, lessons learned, project updates, backend/frontend development, Java, Spring Boot, React, TypeScript, and real-world coding experiences.\n\n" + "You will receive occasional email updates related to new content and developer notes.\n\n" + "Thanks again for joining. I am happy to have you here.\n\n" + "Best regards,\n" + "Ali\n\n" + "If you ever want to unsubscribe, you can use this link:\n" + unsubscribeUrl);
         } catch (Exception exception) {
-            System.out.println(exception.getMessage());
+            exception.printStackTrace();
         }
     }
 
