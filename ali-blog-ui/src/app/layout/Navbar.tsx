@@ -11,31 +11,31 @@ import {
 import { NavLink, useNavigate } from "react-router-dom";
 
 import { useAuth } from "../auth/useAuth";
-
 import { useNotification } from "../notifications/useNotification";
 import { routes } from "../router/routes";
 
 const navLinkStyles = {
   textTransform: "none",
-  fontWeight: 600,
+  fontWeight: 700,
   fontSize: 14,
   color: "text.secondary",
   px: 1.5,
+  borderRadius: 999,
 
   "&.active": {
-    color: "text.primary",
+    color: "primary.main",
+    bgcolor: "rgba(255,95,25,0.08)",
   },
 
   "&:hover": {
-    bgcolor: "transparent",
-    color: "text.primary",
+    bgcolor: "rgba(255,95,25,0.08)",
+    color: "primary.main",
   },
 };
 
 export default function Navbar() {
   const { isAuthenticated, logout } = useAuth();
   const { showNotification } = useNotification();
-
   const navigate = useNavigate();
 
   const handleLogout = () => {
@@ -50,28 +50,69 @@ export default function Navbar() {
       color="inherit"
       elevation={0}
       sx={{
-        bgcolor: "rgba(255,255,255,0.82)",
-        backdropFilter: "blur(10px)",
+        bgcolor: "rgba(255,255,255,0.86)",
+        backdropFilter: "blur(14px)",
         borderBottom: "1px solid",
         borderColor: "divider",
       }}
     >
-      <Toolbar sx={{ minHeight: 72 }}>
+      <Toolbar sx={{ minHeight: 76 }}>
         <Container maxWidth="lg" disableGutters>
           <Stack direction="row" spacing={2} sx={{ alignItems: "center" }}>
-            <Typography
+            <Stack
               component={NavLink}
               to={routes.home}
+              direction="row"
+              spacing={1.2}
               sx={{
+                alignItems: "center",
                 textDecoration: "none",
                 color: "text.primary",
-                fontWeight: 800,
-                fontSize: 22,
-                letterSpacing: "-0.04em",
               }}
             >
-              Ali Dev Journal
-            </Typography>
+              <Box
+                sx={{
+                  width: 34,
+                  height: 34,
+                  borderRadius: 2,
+                  display: "grid",
+                  placeItems: "center",
+                  bgcolor: "primary.main",
+                  color: "white",
+                  fontWeight: 900,
+                  fontSize: 15,
+                  boxShadow: "0 10px 24px rgba(255,95,25,0.28)",
+                }}
+              >
+                IQ
+              </Box>
+
+              <Box>
+                <Typography
+                  sx={{
+                    fontWeight: 900,
+                    fontSize: 22,
+                    lineHeight: 1,
+                    letterSpacing: "-0.045em",
+                  }}
+                >
+                  FullStackIQ
+                </Typography>
+
+                <Typography
+                  sx={{
+                    mt: 0.3,
+                    color: "text.secondary",
+                    fontSize: 11,
+                    fontWeight: 700,
+                    letterSpacing: "0.12em",
+                    textTransform: "uppercase",
+                  }}
+                >
+                  Dev Journal
+                </Typography>
+              </Box>
+            </Stack>
 
             <Box sx={{ flexGrow: 1 }} />
 

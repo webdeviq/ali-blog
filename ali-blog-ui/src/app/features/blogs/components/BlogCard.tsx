@@ -1,6 +1,11 @@
 import ArrowOutwardIcon from "@mui/icons-material/ArrowOutward";
+
 import { Box, Card, CardContent, Chip, Typography } from "@mui/material";
 import { Link } from "react-router-dom";
+
+import { SiDotnet } from "react-icons/si";
+
+import { LuShip, LuServer, LuCode } from "react-icons/lu";
 
 import type { Blog } from "../../../models/blog";
 import { formatDisplayDate } from "../../../utils/formatDisplayDate";
@@ -10,6 +15,30 @@ import { routes } from "../../../router/routes";
 type Props = {
   blog: Blog;
 };
+
+import { FaJava, FaReact } from "react-icons/fa";
+
+import { SiTypescript, SiSpringboot, SiPostgresql } from "react-icons/si";
+import { LuLayers } from "react-icons/lu";
+
+function getCategoryIcon(categoryName: string) {
+  const name = categoryName.toLowerCase();
+
+  if (name.includes("react")) return <FaReact size={16} />;
+  if (name.includes("typescript")) return <SiTypescript size={16} />;
+  if (name.includes("spring")) return <SiSpringboot size={16} />;
+  if (name.includes("java")) return <FaJava size={16} />;
+  if (name.includes("csharp") || name.includes("c#"))
+    return <SiDotnet size={16} />;
+  if (name.includes("sql") || name.includes("postgres"))
+    return <SiPostgresql size={16} />;
+  if (name.includes("architecture")) return <LuLayers size={16} />;
+  if (name.includes("backend")) return <LuServer size={16} />;
+  if (name.includes("navis") || name.includes("n4"))
+    return <LuShip size={16} />;
+
+  return <LuCode size={16} />;
+}
 
 export default function BlogCard({ blog }: Props) {
   const { estimatedReadTime } = getEstimatedReadTime(blog.content);
@@ -26,10 +55,8 @@ export default function BlogCard({ blog }: Props) {
         borderRadius: 4,
         transition: "all 0.2s ease",
         height: "100%",
-
         position: "relative",
         overflow: "hidden",
-
         "&::before": {
           content: '""',
           position: "absolute",
@@ -39,7 +66,6 @@ export default function BlogCard({ blog }: Props) {
           height: 4,
           bgcolor: "primary.main",
         },
-
         "&:hover": {
           transform: "translateY(-4px)",
           borderColor: "rgba(255,95,25,0.35)",
@@ -58,12 +84,16 @@ export default function BlogCard({ blog }: Props) {
           }}
         >
           <Chip
+            icon={getCategoryIcon(blog.categoryName)}
             label={blog.categoryName}
             size="small"
             sx={{
               bgcolor: "rgba(255,95,25,0.08)",
               color: "primary.dark",
               fontWeight: 700,
+              "& .MuiChip-icon": {
+                color: "primary.dark",
+              },
             }}
           />
 
