@@ -36,16 +36,10 @@ public class NewsletterService {
 
         String unsubscribeUrl = frontendUrl + "/unsubscribe?token=" + savedSubscriber.getUnsubscribeToken();
 
-        emailService.sendEmail(email, "Welcome to Ali's Dev Journal", "Hi there,\n\n" + "Thank you for subscribing to Ali's Dev Journal.\n\n" + "This is where I share my journey as a developer, including notes, lessons learned, project updates, backend/frontend development, Java, Spring Boot, React, TypeScript, and real-world coding experiences.\n\n" + "You will receive occasional email updates related to new content and developer notes.\n\n" + "Thanks again for joining. I am happy to have you here.\n\n" + "Best regards,\n" + "Ali\n\n" + "If you ever want to unsubscribe, you can use this link:\n" + unsubscribeUrl);
-    }
-
-    public void notifySubscribersAboutNewPost(String title, String excerpt, String postUrl) {
-        List<NewsletterSubscriber> subscribers = subscriberRepository.findAll();
-
-        for (NewsletterSubscriber subscriber : subscribers) {
-            String unsubscribeUrl = frontendUrl + "/unsubscribe?token=" + subscriber.getUnsubscribeToken();
-
-            emailService.sendEmail(subscriber.getEmail(), "New post: " + title, "Hi there,\n\n" + "I just published a new post on Ali's Dev Journal.\n\n" + title + "\n\n" + excerpt + "\n\n" + "Read it here:\n" + postUrl + "\n\n" + "Best regards,\n" + "Ali\n\n" + "Unsubscribe:\n" + unsubscribeUrl);
+        try {
+            emailService.sendEmail(email, "Welcome to Ali's Dev Journal", "Hi there,\n\n" + "Thank you for subscribing to Ali's Dev Journal.\n\n" + "This is where I share my journey as a developer, including notes, lessons learned, project updates, backend/frontend development, Java, Spring Boot, React, TypeScript, and real-world coding experiences.\n\n" + "You will receive occasional email updates related to new content and developer notes.\n\n" + "Thanks again for joining. I am happy to have you here.\n\n" + "Best regards,\n" + "Ali\n\n" + "If you ever want to unsubscribe, you can use this link:\n" + unsubscribeUrl);
+        } catch (Exception exception) {
+            System.out.println(exception.getMessage());
         }
     }
 
@@ -63,8 +57,20 @@ public class NewsletterService {
 
     public void unsubscribeByToken(String token) {
         NewsletterSubscriber subscriber = subscriberRepository.findByUnsubscribeToken(token).orElseThrow(() -> new ResourceNotFoundException("Invalid unsubscribe token."));
-
         subscriberRepository.delete(subscriber);
+    }
+
+    public void notifySubscribersAboutNewPost(String title, String excerpt, String postUrl) {
+        List<NewsletterSubscriber> subscribers = subscriberRepository.findAll();
+        for (NewsletterSubscriber subscriber : subscribers) {
+            String unsubscribeUrl = frontendUrl + "/unsubscribe?token=" + subscriber.getUnsubscribeToken();
+
+            try {
+                emailService.sendEmail(subscriber.getEmail(), "New post on FullStackIQ: " + title, "Hi there,\n\n" + "I just published a new post on FullStackIQ.\n\n" + title + "\n\n" + excerpt + "\n\n" + "Read it here:\n" + postUrl + "\n\n" + "Best regards,\n" + "Ali\n\n" + "If you ever want to unsubscribe, you can use this link:\n" + unsubscribeUrl);
+            } catch (Exception exception) {
+                System.out.println(exception.getMessage());
+            }
+        }
     }
 
     private SubscriberResponse toResponse(NewsletterSubscriber subscriber) {

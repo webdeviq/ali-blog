@@ -76,11 +76,10 @@ export default function NewsletterSection() {
             }
             sx={{ minWidth: { xs: "100%", sm: 320 } }}
           />
-
           <Button
+            type="submit"
             variant="contained"
             disabled={!isValidEmail || submitting}
-            sx={{ px: 3 }}
             onClick={handleSubscribe}
           >
             {submitting ? "Subscribing..." : "Subscribe"}
