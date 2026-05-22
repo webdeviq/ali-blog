@@ -53,7 +53,7 @@ export default function NewsletterSection() {
           sx={{ color: "primary.main", fontSize: 38, mb: 2 }}
         />
 
-        <Typography variant="h4" sx={{ mb: 1 }}>
+        <Typography variant="h5" sx={{ mb: 1 }}>
           Stay updated
         </Typography>
 

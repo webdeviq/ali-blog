@@ -11,6 +11,7 @@ import LoginPage from "../account/LoginPage";
 import AdminDashboard from "../admin/AdminDashboard";
 import BlogEditorPage from "../admin/BlogEditorPage";
 import RequireAuth from "../auth/RequireAuth";
+import AboutPage from "../features/about/AboutPage";
 
 export const router = createBrowserRouter([
   {
@@ -22,7 +23,7 @@ export const router = createBrowserRouter([
       { path: "blogs/:slug", element: <BlogDetailsPage /> },
       { path: "login", element: <LoginPage /> },
       { path: "unsubscribe", element: <UnsubscribePage /> },
-
+      { path: "about", element: <AboutPage /> },
       {
         element: <RequireAuth roles={["Admin"]} />,
         children: [

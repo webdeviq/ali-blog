@@ -2,12 +2,15 @@ import axios from "axios";
 import type { Blog } from "../models/blog";
 import type { PagedResponse } from "../models/pagedResponse";
 import type { LoginResponse } from "../models/loginResponse";
-import type { MessageResponse } from "../models/messageResponse";
+import type{ MessageResponse } from "../models/messageResponse";
 import type { SubscriberResponse } from "../models/subscriberResponse";
 import type {
   CreatePostRequest,
   UpdatePostRequest,
 } from "../models/createPostRequest";
+
+import type { Category } from "../models/category";
+
 
 axios.defaults.baseURL = import.meta.env.VITE_API_URL;
 
@@ -50,6 +53,10 @@ const Account = {
     requests.post<LoginResponse>("/auth/login", body),
 };
 
+const Categories = {
+  list: () => requests.get<Category[]>("/categories")
+}
+
 const Newsletter = {
   subscribe: (body: { email: string }) =>
     requests.post<MessageResponse>("/newsletter/subscribe", body),
@@ -83,6 +90,7 @@ const agent = {
   Account,
   Newsletter,
   AdminPosts,
+  Categories
 };
 
 export default agent;

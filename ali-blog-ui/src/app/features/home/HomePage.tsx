@@ -27,7 +27,9 @@ export default function HomePage() {
     agent.BlogPosts.list()
       .then((response) => setBlogs(response.content.slice(0, 3)))
       .catch(() =>
-        setError("An error occurred loading the latest posts. Please try again later."),
+        setError(
+          "An error occurred loading the latest posts. Please try again later.",
+        ),
       )
       .finally(() => setLoading(false));
   }, []);
@@ -57,7 +59,7 @@ export default function HomePage() {
             }}
           />
 
-          <Typography variant="h2" sx={{ maxWidth: 760 }}>
+          <Typography variant="h3" sx={{ maxWidth: 760 }}>
             Notes, builds, and lessons from my software engineering journey.
           </Typography>
 
@@ -86,7 +88,7 @@ export default function HomePage() {
       </Paper>
 
       <Box sx={{ mt: 6 }}>
-        <Typography variant="h4" sx={{ mb: 3 }}>
+        <Typography variant="h5" sx={{ mb: 3 }}>
           Latest Articles
         </Typography>
 

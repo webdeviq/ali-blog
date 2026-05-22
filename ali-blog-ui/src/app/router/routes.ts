@@ -5,6 +5,7 @@ export const routes = {
 
   admin: "/admin",
   createPost: "/admin/posts/new",
+  about: "/about",
 
   editPost: (slug: string) => `/admin/posts/${slug}/edit`,
   blogDetails: (slug: string) => `/blogs/${slug}`,

@@ -1,6 +1,7 @@
 import SaveOutlinedIcon from "@mui/icons-material/SaveOutlined";
 import SendOutlinedIcon from "@mui/icons-material/SendOutlined";
-import { tagOptions } from "../features/blogs/tagOptions";
+
+import type { Category } from "../models/category";
 
 import BlogPostPreview from "./BlogPostPreview";
 import { useEffect, useState } from "react";
@@ -36,7 +37,7 @@ export default function BlogEditorPage() {
   const { showNotification } = useNotification();
 
   const isEditMode = Boolean(slug);
-  const [loading, setLoading] = useState(isEditMode);
+  const [loading, setLoading] = useState(true);
 
   const [formValues, setFormValues] = useState<BlogPostFormValues>({
     title: "",
@@ -46,22 +47,34 @@ export default function BlogEditorPage() {
     isPublished: false,
   });
 
+  const [categories, setCategories] = useState<Category[]>([]);
+
   useEffect(() => {
-    if (!isEditMode || !slug) return;
+    const loadEditorData = async () => {
+      try {
+        const categoriesResponse = await agent.Categories.list();
+        setCategories(categoriesResponse);
 
-    agent.AdminPosts.details(slug)
-      .then((post) =>
-        setFormValues({
-          title: post.title,
-          excerpt: post.excerpt,
-          categorySlug: post.categorySlug,
-          content: post.content,
-          isPublished: post.published,
-        }),
-      )
-      .finally(() => setLoading(false));
-  }, [isEditMode, slug]);
+        if (isEditMode && slug) {
+          const post = await agent.AdminPosts.details(slug);
 
+          setFormValues({
+            title: post.title,
+            excerpt: post.excerpt,
+            categorySlug: post.categorySlug,
+            content: post.content,
+            isPublished: post.published,
+          });
+        }
+      } catch {
+        showNotification("Failed to load editor data", "error");
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    loadEditorData();
+  }, [isEditMode, slug, showNotification]);
   if (loading) {
     return <CircularProgress />;
   }
@@ -225,7 +238,7 @@ export default function BlogEditorPage() {
             onChange={handleChange("categorySlug")}
             fullWidth
           >
-            {tagOptions.map((category) => (
+            {categories.map((category) => (
               <MenuItem key={category.slug} value={category.slug}>
                 {category.name}
               </MenuItem>

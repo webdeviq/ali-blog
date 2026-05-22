@@ -119,7 +119,9 @@ export default function Navbar() {
             <Button component={NavLink} to={routes.blogs} sx={navLinkStyles}>
               Blogs
             </Button>
-
+            <Button component={NavLink} to={routes.about} sx={navLinkStyles}>
+              About
+            </Button>
             {isAuthenticated && (
               <>
                 <Button
