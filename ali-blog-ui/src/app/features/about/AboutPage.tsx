@@ -3,6 +3,35 @@ import { Box, Chip, Paper, Stack, Typography } from "@mui/material";
 export default function AboutPage() {
   return (
     <Box>
+      <Paper elevation={0}
+        sx={{
+          p: { xs: 3, md: 5 }, borderRadius: 4,
+
+          border: "1px solid",
+          borderColor: "divider",
+          background:
+            "radial-gradient(circle at top right, rgba(255, 95, 25, 0.12), transparent 35%), #fff"
+        }}
+      >
+
+        <Typography variant="h3" sx={{ mb: 2 }}>
+          Who Am I?
+        </Typography>
+
+        <Typography color="text.secondary" sx={{ fontSize: 18, lineHeight: 1.8 }}>
+          My name is Ali, and I'm a full-stack web developer who loves building real
+          software and understanding how things work under the hood. I enjoy working
+          across the stack, from designing clean user interfaces with React and
+          TypeScript to building backend APIs with C#, .NET, Java, and Spring Boot.
+          <br />
+          <br />
+          What drives me most is the process of learning, debugging, improving, and
+          turning ideas into working applications. FullStackIQ is where I document that
+          journey — the lessons, mistakes, breakthroughs, and practical experience I
+          gain while becoming a stronger software engineer.
+        </Typography>
+
+      </Paper>
       <Paper
         elevation={0}
         sx={{
@@ -14,10 +43,10 @@ export default function AboutPage() {
             "radial-gradient(circle at top right, rgba(255,95,25,0.12), transparent 35%), #fff",
         }}
       >
+
         <Typography variant="h3" sx={{ mb: 2 }}>
           About FullStackIQ
         </Typography>
-
         <Typography
           color="text.secondary"
           sx={{ fontSize: 18, lineHeight: 1.8 }}
