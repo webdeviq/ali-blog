@@ -1,6 +1,7 @@
 import ArrowOutwardIcon from "@mui/icons-material/ArrowOutward";
 
 import { Box, Card, CardContent, Chip, Typography } from "@mui/material";
+import { alpha } from "@mui/material/styles";
 import { Link } from "react-router-dom";
 
 import { SiDotnet } from "react-icons/si";
@@ -50,9 +51,6 @@ export default function BlogCard({ blog }: Props) {
       elevation={0}
       sx={{
         textDecoration: "none",
-        border: "1px solid",
-        borderColor: "divider",
-        borderRadius: 4,
         transition: "all 0.2s ease",
         height: "100%",
         position: "relative",
@@ -68,8 +66,9 @@ export default function BlogCard({ blog }: Props) {
         },
         "&:hover": {
           transform: "translateY(-4px)",
-          borderColor: "rgba(255,95,25,0.35)",
-          boxShadow: "0 14px 35px rgba(15,23,42,0.08)",
+          borderColor: (muiTheme) =>
+            alpha(muiTheme.palette.primary.main, 0.35),
+          boxShadow: "0 14px 35px rgba(23, 32, 51, 0.08)",
         },
       }}
     >
@@ -88,9 +87,6 @@ export default function BlogCard({ blog }: Props) {
             label={blog.categoryName}
             size="small"
             sx={{
-              bgcolor: "rgba(255,95,25,0.08)",
-              color: "primary.dark",
-              fontWeight: 700,
               "& .MuiChip-icon": {
                 color: "primary.dark",
               },
@@ -114,7 +110,7 @@ export default function BlogCard({ blog }: Props) {
         </Typography>
 
         <Typography variant="body2" color="text.secondary">
-          {formatDisplayDate(new Date(blog.createdAt))} • {estimatedReadTime}{" "}
+          {formatDisplayDate(new Date(blog.createdAt))} / {estimatedReadTime}{" "}
           min read
         </Typography>
       </CardContent>

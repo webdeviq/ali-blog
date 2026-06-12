@@ -1,5 +1,6 @@
 import MarkEmailReadOutlinedIcon from "@mui/icons-material/MarkEmailReadOutlined";
 import { Box, Button, Paper, TextField, Typography } from "@mui/material";
+import { alpha } from "@mui/material/styles";
 import { useState } from "react";
 
 import agent from "../../api/agent";
@@ -41,11 +42,14 @@ export default function NewsletterSection() {
       sx={{
         mt: 8,
         p: { xs: 3, md: 5 },
-        borderRadius: 4,
+        borderRadius: 2,
         border: "1px solid",
         borderColor: "divider",
-        background:
-          "radial-gradient(circle at top right, rgba(255,95,25,0.12), transparent 35%), #fff",
+        background: (muiTheme) =>
+          `radial-gradient(circle at top right, ${alpha(
+            muiTheme.palette.primary.main,
+            0.12,
+          )}, transparent 35%), ${muiTheme.palette.background.paper}`,
       }}
     >
       <Box sx={{ maxWidth: 720 }}>

@@ -9,6 +9,7 @@ import {
   Stack,
   Typography,
 } from "@mui/material";
+import { alpha } from "@mui/material/styles";
 import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 
@@ -40,22 +41,25 @@ export default function HomePage() {
         elevation={0}
         sx={{
           p: { xs: 3, md: 6 },
-          borderRadius: 4,
+          borderRadius: 2,
           border: "1px solid",
           borderColor: "divider",
-          background:
-            "radial-gradient(circle at top left, rgba(255,95,25,0.12), transparent 35%), #fff",
+          background: (muiTheme) =>
+            `radial-gradient(circle at top left, ${alpha(
+              muiTheme.palette.primary.main,
+              0.12,
+            )}, transparent 35%), ${muiTheme.palette.background.paper}`,
         }}
       >
         <Stack spacing={3}>
           <Chip
             icon={<CodeIcon />}
-            label="Java • Spring Boot • React • TypeScript"
+            label="Java / Spring Boot / React / TypeScript"
             sx={{
               width: "fit-content",
-              bgcolor: "rgba(255,95,25,0.08)",
-              color: "primary.dark",
-              fontWeight: 700,
+              "& .MuiChip-icon": {
+                color: "primary.dark",
+              },
             }}
           />
 
